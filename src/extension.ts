@@ -799,17 +799,20 @@ function getWebviewContent(): string {
     .footer-dot { margin: 0 6px; opacity: .5; }
 
     /* AQI colors */
+    /* AQI colors */
+    .aqi-verygood    { color: #00b0f0; }
     .aqi-good        { color: #00b050; }
     .aqi-moderate    { color: #e0c846; }
     .aqi-usg         { color: #ff7e00; }
     .aqi-unhealthy   { color: #e53e3e; }
-    .aqi-verybad     { color: #8f3f97; }
+    .aqi-hazardous   { color: #8f3f97; }
 
+    .dot-verygood    { background: #00b0f0; }
     .dot-good        { background: #00b050; }
     .dot-moderate    { background: #e0c846; }
     .dot-usg         { background: #ff7e00; }
     .dot-unhealthy   { background: #e53e3e; }
-    .dot-verybad     { background: #8f3f97; }
+    .dot-hazardous   { background: #8f3f97; }
   </style>
 </head>
 <body>
@@ -1249,11 +1252,12 @@ function getWebviewContent(): string {
     /* ─── AQI Helper ─── */
     function aqiLevel(pm25) {
       if (pm25 == null) return { cls: '', dotCls: '', label: 'N/A' };
+      if (pm25 <= 15)   return { cls: 'aqi-verygood',  dotCls: 'dot-verygood',  label: 'Very Good' };
       if (pm25 <= 25)   return { cls: 'aqi-good',      dotCls: 'dot-good',      label: 'Good' };
       if (pm25 <= 37.5) return { cls: 'aqi-moderate',  dotCls: 'dot-moderate',  label: 'Moderate' };
       if (pm25 <= 75)   return { cls: 'aqi-usg',       dotCls: 'dot-usg',       label: 'Unhealthy for SGP' };
       if (pm25 <= 100)  return { cls: 'aqi-unhealthy', dotCls: 'dot-unhealthy', label: 'Unhealthy' };
-      return { cls: 'aqi-verybad', dotCls: 'dot-verybad', label: 'Very Unhealthy' };
+      return { cls: 'aqi-hazardous', dotCls: 'dot-hazardous', label: 'Hazardous' };
     }
 
     /* ─── Utilities ─── */

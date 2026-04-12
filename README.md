@@ -51,11 +51,12 @@ Open NAKA Client
 
 | ระดับ | PM2.5 (µg/m³) | สี |
 |-------|---------------|-----|
-| ดีมาก | ≤ 25 | 🟢 Good |
-| ดี | ≤ 37.5 | 🟡 Moderate |
-| เริ่มมีผล | ≤ 75 | 🟠 Unhealthy for SGP |
-| มีผลต่อสุขภาพ | ≤ 100 | 🔴 Unhealthy |
-| อันตราย | > 100 | 🟣 Very Unhealthy |
+| ดีมาก | 0 - 15 | 🔵 Very Good |
+| ดี | 15.1 - 25 | 🟢 Good |
+| ปานกลาง | 25.1 - 37.5 | 🟡 Moderate |
+| เริ่มมีผลต่อสุขภาพ | 37.6 - 75 | 🟠 Unhealthy for Sensitive Groups |
+| มีผลต่อสุขภาพ | 75.1 - 100 | 🔴 Unhealthy |
+| อันตราย | > 100 | 🟣 Hazardous |
 
 ## 🛠️ Development
 
