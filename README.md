@@ -83,7 +83,7 @@ npm run watch
 - **NAKA-AQI Website**: [https://naka-env.org](https://naka-env.org)
 - **API Docs**: [https://naka-env.org/api-docs](https://naka-env.org/api-docs)
 - **Source on GitHub**: [https://github.com/tooltham/naka-aqi](https://github.com/tooltham/naka-aqi)
-- **Research Unit**: Internet of Things and Embedded System Research Unit (IoTES) · Nakhon Phanom University
+- **Research Unit**: Internet of Things and Embedded System (IoTES) · Nakhon Phanom University
 
 ---
 
