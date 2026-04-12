@@ -915,19 +915,19 @@ function getWebviewContent(): string {
       {
         icon: '📈',
         name: 'History 24h',
-        path: '/stations/{id}/history?hours=24',
+        path: '/stations/{id}/history',
         method: 'GET',
         stationId: 'ST001',
-        sub: 'history?hours=24',
+        sub: 'history?start={start_24h}&end={end_now}',
         showCards: false,
       },
       {
         icon: '📅',
         name: 'History 7 Days',
-        path: '/stations/{id}/history?hours=168',
+        path: '/stations/{id}/history',
         method: 'GET',
         stationId: 'ST001',
-        sub: 'history?hours=168',
+        sub: 'history?start={start_168h}&end={end_now}',
         showCards: false,
       },
       {
@@ -936,7 +936,7 @@ function getWebviewContent(): string {
         path: '/stations/{id}/monthly',
         method: 'GET',
         stationId: 'ST001',
-        sub: 'monthly?year=2026&month=4',
+        sub: 'monthly?{current_month}',
         showCards: false,
       },
       {
@@ -1012,9 +1012,27 @@ function getWebviewContent(): string {
       const ep = QUICK_ENDPOINTS[idx];
       currentEndpoint = ep;
 
+      let sub = ep.sub || '';
+      const now = new Date();
+
+      if (sub.includes('{end_now}')) {
+        const endStr = encodeURIComponent(now.toISOString());
+        let past = new Date();
+        if (sub.includes('{start_24h}')) {
+          past = new Date(now.getTime() - 24 * 3600 * 1000);
+          sub = sub.replace('{start_24h}', encodeURIComponent(past.toISOString()));
+        } else if (sub.includes('{start_168h}')) {
+          past = new Date(now.getTime() - 168 * 3600 * 1000);
+          sub = sub.replace('{start_168h}', encodeURIComponent(past.toISOString()));
+        }
+        sub = sub.replace('{end_now}', endStr);
+      } else if (sub.includes('{current_month}')) {
+        sub = sub.replace('{current_month}', \`year=\${now.getFullYear()}&month=\${now.getMonth() + 1}\`);
+      }
+
       // Populate fields
       document.getElementById('stationIdInput').value = ep.stationId || '';
-      document.getElementById('subpathInput').value   = ep.sub || '';
+      document.getElementById('subpathInput').value   = sub;
 
       if (ep.fullUrl) {
         document.getElementById('urlInput').value = ep.fullUrl;
