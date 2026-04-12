@@ -774,6 +774,30 @@ function getWebviewContent(): string {
     }
     .toast.show { opacity: 1; transform: translateY(0); }
 
+    /* ─── Footer ─── */
+    .app-footer {
+      text-align: center;
+      padding: 30px 20px 20px;
+      margin-top: 10px;
+      border-top: 1px solid var(--color-border);
+      color: var(--color-text-3);
+      font-size: .68rem;
+      line-height: 1.6;
+    }
+    .app-footer strong {
+      color: var(--npu-navy-light);
+      font-weight: 600;
+      letter-spacing: .2px;
+    }
+    .app-footer a {
+      color: var(--npu-blue);
+      text-decoration: none;
+    }
+    .app-footer a:hover {
+      text-decoration: underline;
+    }
+    .footer-dot { margin: 0 6px; opacity: .5; }
+
     /* AQI colors */
     .aqi-good        { color: #00b050; }
     .aqi-moderate    { color: #e0c846; }
@@ -891,6 +915,12 @@ function getWebviewContent(): string {
       <div class="section-title mb-8" id="stationSectionTitle">Stations</div>
       <div class="station-grid" id="stationGrid"></div>
     </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div>Developed by <strong>NAKA-AQI Research Project (FF69)</strong> <span class="footer-dot">•</span> <strong>Nakhon Phanom University</strong></div>
+      <div style="margin-top:4px;">NAKA Client Extension for <a href="https://naka-env.org" target="_blank">naka-env.org</a> API.</div>
+    </footer>
 
   </div>
 
