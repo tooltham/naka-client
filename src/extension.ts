@@ -22,12 +22,12 @@ export function activate(context: vscode.ExtensionContext) {
 			async (message) => {
 				switch (message.command) {
 					case 'saveApiKey':
-						await context.globalState.update('nakaApiKey', message.key);
+						await context.secrets.store('nakaApiKey', message.key);
 						panel.webview.postMessage({ command: 'apiKeySaved' });
 						return;
 					case 'loadApiKey':
-						const storedKey = context.globalState.get<string>('nakaApiKey', '');
-						panel.webview.postMessage({ command: 'apiKeyLoaded', key: storedKey });
+						const storedKey = await context.secrets.get('nakaApiKey');
+						panel.webview.postMessage({ command: 'apiKeyLoaded', key: storedKey || '' });
 						return;
 					case 'doFetch':
 						const start = Date.now();

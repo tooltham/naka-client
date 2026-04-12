@@ -8,11 +8,12 @@
 
 ## ✨ Features
 
-- **Quick Endpoints** — เรียก NAKA-AQI API ด้วยคลิกเดียว (All Stations, Current, History 24h/7d, Monthly)
-- **API Key Management** — บันทึก API Key ใน VS Code global state ส่ง `Authorization: Bearer` ทุก request อัตโนมัติ
+- **Quick Endpoints** — เรียก NAKA-AQI API ด้วยคลิกเดียว พร้อมคำนวณและเติม `start/end` (เวลาแบบ ISO 8601) ให้อัตโนมัติ
+- **Secure API Key Management** — บันทึก API Key ปลอดภัยระดับสูงสุดผ่าน `VS Code SecretStorage` (OS Keychain) และแนบ Header `X-API-Key` ทุก request อัตโนมัติ
+- **NPU Theme** — UI ออกแบบตาม design system ของมหาวิทยาลัยนครพนม สื่อถึงความเป็น Enterprise 
+- **CORS Bypass** — ตัว Extension ยิง API ผ่าน Native Node.js ทำให้ไม่มีปัญหาเรื่อง CORS ปิดกั้นเมื่อดึงข้อมูล
 - **Station Cards** — แสดงผลสถานีทุกจุดพร้อม PM2.5 color-coded ตามมาตรฐาน AQI ไทย
 - **JSON Syntax Highlight** — แสดงผล Response แบบ pretty-print พร้อม copy ได้ทันที
-- **NPU Theme** — UI ออกแบบตาม design system ของ naka-env.org (Navy + Gold)
 
 ## 🚀 Getting Started
 
@@ -42,9 +43,8 @@ Open NAKA Client
 |----------|-------------|
 | `GET /api/stations` | รายชื่อสถานีทั้งหมด + ค่าล่าสุด |
 | `GET /api/stations/{id}/current` | ค่าปัจจุบันของสถานีนั้น |
-| `GET /api/stations/{id}/history?hours=24` | ข้อมูลย้อนหลัง 24 ชั่วโมง |
-| `GET /api/stations/{id}/history?hours=168` | ข้อมูลย้อนหลัง 7 วัน |
-| `GET /api/stations/{id}/monthly?year=&month=` | ข้อมูลรายเดือน |
+| `GET /api/stations/{id}/history?start={ISO}&end={ISO}` | ข้อมูลย้อนหลัง (เช่น 24 ชม. หรือ 7 วัน) |
+| `GET /api/stations/{id}/monthly?year={YYYY}&month={M}` | ข้อมูลรายเดือน |
 | `GET /api/keys/me` | ดู API Key ของตัวเอง |
 
 ## 🎨 PM2.5 AQI Color Scale
@@ -83,8 +83,8 @@ npm run watch
 - **NAKA-AQI Website**: [https://naka-env.org](https://naka-env.org)
 - **API Docs**: [https://naka-env.org/api-docs](https://naka-env.org/api-docs)
 - **Source on GitHub**: [https://github.com/tooltham/naka-aqi](https://github.com/tooltham/naka-aqi)
-- **Research Unit**: Internet of Things and Embedded Systems Research Unit · NPU
+- **Research Unit**: Internet of Things and Embedded System Research Unit (IoTES) · Nakhon Phanom University
 
 ---
 
-*FF69 Research Project · Nakhon Phanom University*
+*Developed by Internet of Things and Embedded System Research Unit (IoTES), Nakhon Phanom University*
