@@ -29,6 +29,32 @@ export function activate(context: vscode.ExtensionContext) {
 						const storedKey = context.globalState.get<string>('nakaApiKey', '');
 						panel.webview.postMessage({ command: 'apiKeyLoaded', key: storedKey });
 						return;
+					case 'doFetch':
+						const start = Date.now();
+						try {
+							const response = await fetch(message.url, {
+								method: message.method || 'GET',
+								headers: message.headers
+							});
+							const text = await response.text();
+							panel.webview.postMessage({
+								command: 'doFetchResponse',
+								id: message.id,
+								ok: response.ok,
+								status: response.status,
+								statusText: response.statusText,
+								text: text,
+								time: Date.now() - start
+							});
+						} catch (err: any) {
+							panel.webview.postMessage({
+								command: 'doFetchError',
+								id: message.id,
+								error: err.message || String(err),
+								time: Date.now() - start
+							});
+						}
+						return;
 				}
 			},
 			undefined,
@@ -940,6 +966,9 @@ function getWebviewContent(): string {
       });
     });
 
+    let currentFetchId = 0;
+    const fetchPromises = {};
+
     window.addEventListener('message', (event) => {
       const msg = event.data;
       if (msg.command === 'apiKeyLoaded') {
@@ -951,6 +980,12 @@ function getWebviewContent(): string {
       if (msg.command === 'apiKeySaved') {
         setApikeyStatus(true);
         showToast('✅ API Key saved');
+      }
+      if (msg.command === 'doFetchResponse' || msg.command === 'doFetchError') {
+        if (fetchPromises[msg.id]) {
+          fetchPromises[msg.id](msg);
+          delete fetchPromises[msg.id];
+        }
       }
     });
 
@@ -1039,14 +1074,30 @@ function getWebviewContent(): string {
 
       const apiKey   = getApiKey();
       const headers  = { 'Content-Type': 'application/json' };
-      if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
+      if (apiKey) headers['X-API-Key'] = apiKey;
 
-      const t0 = Date.now();
+      const fetchId = ++currentFetchId;
+      
+      const p = new Promise(resolve => {
+        fetchPromises[fetchId] = resolve;
+      });
+
+      vscode.postMessage({
+        command: 'doFetch',
+        id: fetchId,
+        url: url,
+        method: currentEndpoint ? currentEndpoint.method : 'GET',
+        headers: headers
+      });
+
       try {
-        const res      = await fetch(url, { headers });
-        const elapsed  = Date.now() - t0;
-        const text     = await res.text();
-        rawResponse    = text;
+        const res = await p;
+        if (res.command === 'doFetchError') {
+          throw new Error(res.error);
+        }
+        
+        const text = res.text;
+        rawResponse = text;
 
         if (res.ok) {
           statusPill.className = 'status-pill ok';
@@ -1055,14 +1106,13 @@ function getWebviewContent(): string {
           statusPill.className = 'status-pill err';
           statusPill.textContent = '✕ ' + res.status + ' ' + res.statusText;
         }
-        respTime.textContent = elapsed + ' ms';
+        respTime.textContent = res.time + ' ms';
 
         try {
           const json  = JSON.parse(text);
           rawResponse = JSON.stringify(json, null, 2);
           respBody.innerHTML = '<pre>' + syntaxHL(rawResponse) + '</pre>';
 
-          // Render station cards?
           if (currentEndpoint?.showCards && res.ok && Array.isArray(json)) {
             renderStationCards(json);
           } else {
@@ -1073,11 +1123,10 @@ function getWebviewContent(): string {
         }
 
       } catch (err) {
-        const elapsed = Date.now() - t0;
         rawResponse = String(err);
         statusPill.className = 'status-pill err';
-        statusPill.textContent = '✕ Network Error';
-        respTime.textContent = elapsed + ' ms';
+        statusPill.textContent = '✕ Network Error / CORS';
+        respTime.textContent = '?? ms';
         respBody.innerHTML = '<div class="empty-state"><span class="em-icon">❌</span><p>' + escHtml(String(err)) + '</p></div>';
       } finally {
         btn.classList.remove('loading');
