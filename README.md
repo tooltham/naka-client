@@ -1,0 +1,90 @@
+# NAKA Client
+
+> VS Code Extension สำหรับดึงข้อมูลคุณภาพอากาศจาก [NAKA-AQI](https://naka-env.org) — ระบบตรวจวัดฝุ่น PM2.5 ของมหาวิทยาลัยนครพนม (FF69 Research Project)
+
+![Version](https://img.shields.io/badge/version-0.0.1-blue)
+![VS Code](https://img.shields.io/badge/VS%20Code-%5E1.107.0-007ACC)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+## ✨ Features
+
+- **Quick Endpoints** — เรียก NAKA-AQI API ด้วยคลิกเดียว (All Stations, Current, History 24h/7d, Monthly)
+- **API Key Management** — บันทึก API Key ใน VS Code global state ส่ง `Authorization: Bearer` ทุก request อัตโนมัติ
+- **Station Cards** — แสดงผลสถานีทุกจุดพร้อม PM2.5 color-coded ตามมาตรฐาน AQI ไทย
+- **JSON Syntax Highlight** — แสดงผล Response แบบ pretty-print พร้อม copy ได้ทันที
+- **NPU Theme** — UI ออกแบบตาม design system ของ naka-env.org (Navy + Gold)
+
+## 🚀 Getting Started
+
+### 1. เปิด Extension
+
+กด `Cmd+Shift+P` (macOS) หรือ `Ctrl+Shift+P` (Windows/Linux) แล้วพิมพ์:
+
+```
+Open NAKA Client
+```
+
+### 2. ตั้งค่า API Key
+
+1. ไปที่ [https://naka-env.org](https://naka-env.org) เพื่อขอ API Key
+2. วาง API Key ในช่อง **🔑 API KEY** แล้วกด **Save**
+3. Key จะถูกเก็บใน VS Code และใช้อัตโนมัติทุกครั้ง
+
+### 3. เรียกข้อมูล
+
+- คลิก **Quick Endpoint** ที่ต้องการ หรือพิมพ์ URL เอง
+- กด **Shoot!** หรือ `Enter`
+- Response จะแสดงพร้อม syntax highlight และ station cards
+
+## 📡 API Endpoints ที่รองรับ
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/stations` | รายชื่อสถานีทั้งหมด + ค่าล่าสุด |
+| `GET /api/stations/{id}/current` | ค่าปัจจุบันของสถานีนั้น |
+| `GET /api/stations/{id}/history?hours=24` | ข้อมูลย้อนหลัง 24 ชั่วโมง |
+| `GET /api/stations/{id}/history?hours=168` | ข้อมูลย้อนหลัง 7 วัน |
+| `GET /api/stations/{id}/monthly?year=&month=` | ข้อมูลรายเดือน |
+| `GET /api/keys/me` | ดู API Key ของตัวเอง |
+
+## 🎨 PM2.5 AQI Color Scale
+
+| ระดับ | PM2.5 (µg/m³) | สี |
+|-------|---------------|-----|
+| ดีมาก | ≤ 25 | 🟢 Good |
+| ดี | ≤ 37.5 | 🟡 Moderate |
+| เริ่มมีผล | ≤ 75 | 🟠 Unhealthy for SGP |
+| มีผลต่อสุขภาพ | ≤ 100 | 🔴 Unhealthy |
+| อันตราย | > 100 | 🟣 Very Unhealthy |
+
+## 🛠️ Development
+
+```bash
+# Clone
+git clone https://github.com/tooltham/naka-client.git
+cd naka-client
+
+# Install dependencies
+npm install
+
+# Watch & compile
+npm run watch
+
+# Open in VS Code and press F5 to launch Extension Development Host
+```
+
+## 📋 Requirements
+
+- VS Code `^1.107.0`
+- API Key จาก [naka-env.org](https://naka-env.org) (rate limit: 100 req/day)
+
+## 🔗 Links
+
+- **NAKA-AQI Website**: [https://naka-env.org](https://naka-env.org)
+- **API Docs**: [https://naka-env.org/api-docs](https://naka-env.org/api-docs)
+- **Source on GitHub**: [https://github.com/tooltham/naka-aqi](https://github.com/tooltham/naka-aqi)
+- **Research Unit**: Internet of Things and Embedded Systems Research Unit · NPU
+
+---
+
+*FF69 Research Project · Nakhon Phanom University*
