@@ -777,8 +777,8 @@ function getWebviewContent(): string {
     /* ─── Footer ─── */
     .app-footer {
       text-align: center;
-      padding: 30px 20px 20px;
-      margin-top: 10px;
+      padding: 16px 20px 10px;
+      margin-top: 16px;
       border-top: 1px solid var(--color-border);
       color: var(--color-text-3);
       font-size: .68rem;
@@ -918,7 +918,7 @@ function getWebviewContent(): string {
 
     <!-- Footer -->
     <footer class="app-footer">
-      <div>Developed by <strong>NAKA-AQI Research Project (FF69)</strong> <span class="footer-dot">•</span> <strong>Nakhon Phanom University</strong></div>
+      <div>Developed by <strong>Internet of Things and Embedded System Research Unit (IoTES)</strong> <span class="footer-dot">•</span> <strong>Nakhon Phanom University</strong></div>
       <div style="margin-top:4px;">NAKA Client Extension for <a href="https://naka-env.org" target="_blank">naka-env.org</a> API.</div>
     </footer>
 
