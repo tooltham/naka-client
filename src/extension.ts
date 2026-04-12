@@ -958,12 +958,12 @@ function getWebviewContent(): string {
     function renderQuickEndpoints() {
       const grid = document.getElementById('qeGrid');
       grid.innerHTML = QUICK_ENDPOINTS.map((ep, i) => \`
-        <button class="qe-btn" id="qe-${i}" onclick="selectEndpoint(${i})">
-          <span class="qe-icon">${ep.icon}</span>
+        <button class="qe-btn" id="qe-\${i}" onclick="selectEndpoint(\${i})">
+          <span class="qe-icon">\${ep.icon}</span>
           <div class="qe-info">
-            <span class="qe-method">${ep.method}</span>
-            <span class="qe-name">${ep.name}</span>
-            <span class="qe-path">${ep.path}</span>
+            <span class="qe-method">\${ep.method}</span>
+            <span class="qe-name">\${ep.name}</span>
+            <span class="qe-path">\${ep.path}</span>
           </div>
         </button>
       \`).join('');
