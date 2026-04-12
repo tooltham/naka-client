@@ -161,10 +161,11 @@ function getWebviewContent(): string {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
       flex-shrink: 0;
       box-shadow: 0 2px 8px rgba(200,164,21,.4);
+      color: var(--npu-navy);
     }
+    .topbar-emblem svg { width: 17px; height: 17px; }
 
     .topbar-title {
       font-size: 1rem;
@@ -792,7 +793,14 @@ function getWebviewContent(): string {
   <!-- ── Topbar ── -->
   <nav class="topbar">
     <div class="topbar-logo">
-      <div class="topbar-emblem">🌿</div>
+      <div class="topbar-emblem">
+        <!-- API / Key Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="7.5" cy="15.5" r="5.5"></circle>
+          <path d="m21 2-9.6 9.6"></path>
+          <path d="m15.5 7.5 3 3L22 7l-3-3"></path>
+        </svg>
+      </div>
       <div>
         <div class="topbar-title">NAKA Client</div>
         <div class="topbar-sub">Nakhon Phanom AQI · VS Code</div>
