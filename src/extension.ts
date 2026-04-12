@@ -957,7 +957,7 @@ function getWebviewContent(): string {
     /* ─── Quick Endpoints ─── */
     function renderQuickEndpoints() {
       const grid = document.getElementById('qeGrid');
-      grid.innerHTML = QUICK_ENDPOINTS.map((ep, i) => `
+      grid.innerHTML = QUICK_ENDPOINTS.map((ep, i) => \`
         <button class="qe-btn" id="qe-${i}" onclick="selectEndpoint(${i})">
           <span class="qe-icon">${ep.icon}</span>
           <div class="qe-info">
@@ -966,7 +966,7 @@ function getWebviewContent(): string {
             <span class="qe-path">${ep.path}</span>
           </div>
         </button>
-      `).join('');
+      \`).join('');
     }
 
     function selectEndpoint(idx) {
