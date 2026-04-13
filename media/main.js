@@ -1,38 +1,52 @@
 /* ─── State ─── */
 let rawResponse = '';
 let currentEndpoint = null;
+
+/** @type {any} VS Code API */
 const vscode = acquireVsCodeApi();
 
 /* ─── Init ─── */
 document.addEventListener('DOMContentLoaded', () => {
   renderQuickEndpoints();
-  vscode.postMessage({ command: 'loadApiKey' });
+  
+  /** @type {import('../src/types').WebviewMessage} */
+  const loadMessage = { command: 'loadApiKey' };
+  vscode.postMessage(loadMessage);
 
   document.getElementById('urlInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') sendRequest();
+    if (e.key === 'Enter') {sendRequest();}
   });
 });
 
 let currentFetchId = 0;
 const fetchPromises = {};
 
+/**
+ * Handle messages from the Extension Host.
+ * @param {MessageEvent} event 
+ */
 window.addEventListener('message', (event) => {
+  /** @type {import('../src/types').HostMessage} */
   const msg = event.data;
-  if (msg.command === 'apiKeyLoaded') {
-    if (msg.key) {
-      document.getElementById('apikeyInput').value = msg.key;
+
+  switch (msg.command) {
+    case 'apiKeyLoaded':
+      if (msg.key) {
+        document.getElementById('apikeyInput').value = msg.key;
+        setApikeyStatus(true);
+      }
+      break;
+    case 'apiKeySaved':
       setApikeyStatus(true);
-    }
-  }
-  if (msg.command === 'apiKeySaved') {
-    setApikeyStatus(true);
-    showToast('✅ API Key saved');
-  }
-  if (msg.command === 'doFetchResponse' || msg.command === 'doFetchError') {
-    if (fetchPromises[msg.id]) {
-      fetchPromises[msg.id](msg);
-      delete fetchPromises[msg.id];
-    }
+      showToast('✅ API Key saved');
+      break;
+    case 'doFetchResponse':
+    case 'doFetchError':
+      if (fetchPromises[msg.id]) {
+        fetchPromises[msg.id](msg);
+        delete fetchPromises[msg.id];
+      }
+      break;
   }
 });
 
@@ -93,8 +107,8 @@ function buildUrl() {
   const sub       = document.getElementById('subpathInput').value.trim();
 
   let url = BASE + '/stations';
-  if (stationId) url += '/' + stationId;
-  if (sub) url += '/' + sub;
+  if (stationId) {url += '/' + stationId;}
+  if (sub) {url += '/' + sub;}
 
   document.getElementById('urlInput').value = url;
 }
@@ -103,7 +117,10 @@ function buildUrl() {
 function saveApiKey() {
   const key = document.getElementById('apikeyInput').value.trim();
   if (!key) { showToast('⚠️ กรุณาใส่ API Key'); return; }
-  vscode.postMessage({ command: 'saveApiKey', key });
+
+  /** @type {import('../src/types').WebviewMessage} */
+  const msg = { command: 'saveApiKey', key };
+  vscode.postMessage(msg);
 }
 
 function setApikeyStatus(saved) {
@@ -139,7 +156,7 @@ async function sendRequest() {
 
   const apiKey   = getApiKey();
   const headers  = { 'Content-Type': 'application/json' };
-  if (apiKey) headers['X-API-Key'] = apiKey;
+  if (apiKey) {headers['X-API-Key'] = apiKey;}
 
   const fetchId = ++currentFetchId;
   
@@ -147,13 +164,15 @@ async function sendRequest() {
     fetchPromises[fetchId] = resolve;
   });
 
-  vscode.postMessage({
+  /** @type {import('../src/types').WebviewMessage} */
+  const fetchMsg = {
     command: 'doFetch',
     id: fetchId,
     url: url,
     method: currentEndpoint ? currentEndpoint.method : 'GET',
     headers: headers
-  });
+  };
+  vscode.postMessage(fetchMsg);
 
   try {
     const res = await p;
@@ -210,7 +229,7 @@ function renderStationCards(stations) {
 
   grid.innerHTML = stations.map(s => {
     const latest = s.latest || {};
-    const pm25   = latest.pm25 != null ? Number(latest.pm25) : null;
+    const pm25   = (latest.pm25 !== null && latest.pm25 !== undefined) ? Number(latest.pm25) : null;
     const { cls, dotCls, label } = aqiLevel(pm25);
 
     const ts = latest.timestamp
@@ -229,15 +248,15 @@ function renderStationCards(stations) {
         <div class="station-location">📍 ${escHtml(s.district || '')} · ${escHtml(s.province || '')}</div>
         <div class="pm25-row">
           <span class="pm25-value ${cls}">
-            ${pm25 != null ? pm25.toFixed(1) : '—'}
+            ${(pm25 !== null && pm25 !== undefined) ? pm25.toFixed(1) : '—'}
           </span>
           <span class="pm25-unit">µg/m³</span>
         </div>
         <div class="pm25-label">PM2.5 · ${label}</div>
         <div class="sensor-row">
-          ${latest.pm10 != null     ? '<span class="sensor-chip">PM10 ' + Number(latest.pm10).toFixed(1) + '</span>' : ''}
-          ${latest.temperature != null ? '<span class="sensor-chip">🌡 ' + Number(latest.temperature).toFixed(1) + '°C</span>' : ''}
-          ${latest.humidity != null ? '<span class="sensor-chip">💧 ' + Number(latest.humidity).toFixed(0) + '%</span>' : ''}
+          ${(latest.pm10 !== null && latest.pm10 !== undefined) ? '<span class="sensor-chip">PM10 ' + Number(latest.pm10).toFixed(1) + '</span>' : ''}
+          ${(latest.temperature !== null && latest.temperature !== undefined) ? '<span class="sensor-chip">🌡 ' + Number(latest.temperature).toFixed(1) + '°C</span>' : ''}
+          ${(latest.humidity !== null && latest.humidity !== undefined) ? '<span class="sensor-chip">💧 ' + Number(latest.humidity).toFixed(0) + '%</span>' : ''}
         </div>
         <div class="station-footer">
           <span class="station-time">🕐 ${ts}</span>
@@ -257,25 +276,29 @@ function useStation(id) {
 
 /* ─── AQI Helper ─── */
 function aqiLevel(pm25) {
-  if (pm25 == null) return { cls: '', dotCls: '', label: 'N/A' };
-  if (pm25 <= 15)   return { cls: 'aqi-verygood',  dotCls: 'dot-verygood',  label: 'Very Good' };
-  if (pm25 <= 25)   return { cls: 'aqi-good',      dotCls: 'dot-good',      label: 'Good' };
-  if (pm25 <= 37.5) return { cls: 'aqi-moderate',  dotCls: 'dot-moderate',  label: 'Moderate' };
-  if (pm25 <= 75)   return { cls: 'aqi-usg',       dotCls: 'dot-usg',       label: 'Unhealthy for SGP' };
-  if (pm25 <= 100)  return { cls: 'aqi-unhealthy', dotCls: 'dot-unhealthy', label: 'Unhealthy' };
+  if (pm25 === null || pm25 === undefined) {return { cls: '', dotCls: '', label: 'N/A' };}
+  if (pm25 <= 15)   {return { cls: 'aqi-verygood',  dotCls: 'dot-verygood',  label: 'Very Good' };}
+  if (pm25 <= 25)   {return { cls: 'aqi-good',      dotCls: 'dot-good',      label: 'Good' };}
+  if (pm25 <= 37.5) {return { cls: 'aqi-moderate',  dotCls: 'dot-moderate',  label: 'Moderate' };}
+  if (pm25 <= 75)   {return { cls: 'aqi-usg',       dotCls: 'dot-usg',       label: 'Unhealthy for SGP' };}
+  if (pm25 <= 100)  {return { cls: 'aqi-unhealthy', dotCls: 'dot-unhealthy', label: 'Unhealthy' };}
   return { cls: 'aqi-hazardous', dotCls: 'dot-hazardous', label: 'Hazardous' };
 }
 
 /* ─── Utilities ─── */
 function syntaxHL(json) {
-  const s = json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const s = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return s.replace(
     /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
     (m) => {
       let c = 'jn';
-      if (/^"/.test(m)) c = /:$/.test(m) ? 'jk' : 'js';
-      else if (/true|false/.test(m)) c = 'jb';
-      else if (/null/.test(m)) c = 'jz';
+      if (/^"/.test(m)) {
+        c = /:$/.test(m) ? 'jk' : 'js';
+      } else if (/true|false/.test(m)) {
+        c = 'jb';
+      } else if (/null/.test(m)) {
+        c = 'jz';
+      }
       return '<span class="' + c + '">' + m + '</span>';
     }
   );
@@ -288,7 +311,7 @@ function escHtml(str) {
 }
 
 function copyResponse() {
-  if (!rawResponse) return;
+  if (!rawResponse) {return;}
   navigator.clipboard.writeText(rawResponse).then(() => {
     const btn = document.querySelector('.copy-btn');
     btn.textContent = '✓ Copied!';

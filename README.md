@@ -2,8 +2,8 @@
 
 > VS Code Extension สำหรับดึงข้อมูลคุณภาพอากาศจาก [NAKA-AQI](https://naka-env.org) — ระบบตรวจวัดฝุ่น PM2.5 ของมหาวิทยาลัยนครพนม (FF69 Research Project)
 
-![Version](https://img.shields.io/badge/version-0.0.1-blue)
-![VS Code](https://img.shields.io/badge/VS%20Code-%5E1.107.0-007ACC)
+![Version](https://img.shields.io/badge/version-0.0.2-blue)
+![VS Code](https://img.shields.io/badge/VS%20Code-%5E1.115.0-007ACC)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## ✨ Features
@@ -76,7 +76,7 @@ npm run watch
 
 ## 📋 Requirements
 
-- VS Code `^1.107.0`
+- VS Code `^1.115.0`
 - API Key จาก [naka-env.org](https://naka-env.org) (rate limit: 100 req/day)
 
 ## 🔗 Links

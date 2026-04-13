@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { BASE_URL, QUICK_ENDPOINTS } from './constants';
+import { WebviewMessage, HostMessage } from './types';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('NAKA Client extension is now active!');
@@ -21,27 +22,30 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		);
 
+		// Helper to send typed messages to the webview
+		const postMessage = (message: HostMessage) => panel.webview.postMessage(message);
+
 		// Handle messages from the webview
 		panel.webview.onDidReceiveMessage(
-			async (message) => {
+			async (message: WebviewMessage) => {
 				switch (message.command) {
 					case 'saveApiKey':
 						await context.secrets.store('nakaApiKey', message.key);
-						panel.webview.postMessage({ command: 'apiKeySaved' });
+						postMessage({ command: 'apiKeySaved' });
 						return;
 					case 'loadApiKey':
 						const storedKey = await context.secrets.get('nakaApiKey');
-						panel.webview.postMessage({ command: 'apiKeyLoaded', key: storedKey || '' });
+						postMessage({ command: 'apiKeyLoaded', key: storedKey || '' });
 						return;
-					case 'doFetch':
+					case 'doFetch': {
 						const start = Date.now();
 						try {
 							const response = await fetch(message.url, {
-								method: message.method || 'GET',
+								method: message.method,
 								headers: message.headers
 							});
 							const text = await response.text();
-							panel.webview.postMessage({
+							postMessage({
 								command: 'doFetchResponse',
 								id: message.id,
 								ok: response.ok,
@@ -51,13 +55,18 @@ export function activate(context: vscode.ExtensionContext) {
 								time: Date.now() - start
 							});
 						} catch (err: any) {
-							panel.webview.postMessage({
+							postMessage({
 								command: 'doFetchError',
 								id: message.id,
 								error: err.message || String(err),
 								time: Date.now() - start
 							});
 						}
+						return;
+					}
+					default:
+						// Exhaustive switch check is not perfect here because it's at runtime,
+						// but TS helps us ensure we handled all commands.
 						return;
 				}
 			},
