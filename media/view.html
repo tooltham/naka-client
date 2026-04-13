@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${cspSource} 'unsafe-inline' https:; script-src ${cspSource} 'unsafe-inline'; img-src ${cspSource} https:;" />
+    <title>NAKA Client</title>
+    <link rel="stylesheet" href="${styleUri}">
+</head>
+<body>
+    <!-- ── Topbar ── -->
+    <nav class="topbar">
+        <div class="topbar-logo">
+            <div class="topbar-emblem">
+                <!-- API / Key Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="7.5" cy="15.5" r="5.5"></circle>
+                    <path d="m21 2-9.6 9.6"></path>
+                    <path d="m15.5 7.5 3 3L22 7l-3-3"></path>
+                </svg>
+            </div>
+            <div>
+                <div class="topbar-title">NAKA Client</div>
+                <div class="topbar-sub">Nakhon Phanom AQI · VS Code</div>
+            </div>
+        </div>
+        <div class="topbar-spacer"></div>
+        <span class="topbar-badge">FF69 · NPU</span>
+    </nav>
+
+    <!-- ── Main ── -->
+    <div class="main">
+
+        <!-- API Key Strip -->
+        <div class="apikey-strip mb-20">
+            <label>🔑 API KEY</label>
+            <input id="apikeyInput" class="apikey-input" type="password"
+                placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+                autocomplete="off" spellcheck="false" />
+            <button class="apikey-save-btn" onclick="saveApiKey()">Save</button>
+            <span id="apikeyStatus" class="apikey-status unsaved">— not set</span>
+        </div>
+
+        <!-- Quick Endpoints -->
+        <div class="section-title mb-8">Quick Endpoints</div>
+        <div class="qe-grid mb-20" id="qeGrid">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- Request Card -->
+        <div class="section-title mb-8">Request</div>
+        <div class="card mb-20">
+            <div class="card-body">
+
+                <!-- URL Row -->
+                <div class="request-row">
+                    <div class="method-pill">GET</div>
+                    <input id="urlInput" class="url-input"
+                        type="text"
+                        placeholder="https://naka-env.org/api/stations"
+                        autocomplete="off" spellcheck="false" />
+                    <button id="shootBtn" class="shoot-btn" onclick="sendRequest()">
+                        <span class="spinner"></span>
+                        <span class="btn-icon">🚀</span>
+                        Shoot!
+                    </button>
+                </div>
+
+                <!-- Extra Fields -->
+                <div class="headers-row">
+                    <div class="field-group">
+                        <label>Station ID (optional)</label>
+                        <input id="stationIdInput" class="field-input"
+                            type="text" placeholder="e.g. ST001"
+                            oninput="buildUrl()" />
+                    </div>
+                    <div class="field-group">
+                        <label>Sub-path (optional)</label>
+                        <input id="subpathInput" class="field-input"
+                            type="text" placeholder="e.g. history?hours=24"
+                            oninput="buildUrl()" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Response Card -->
+        <div class="section-title mb-8">Response</div>
+        <div class="card mb-20">
+            <div class="response-header">
+                <div class="response-header-left">
+                    <span class="resp-tab">JSON</span>
+                    <span id="statusPill" class="status-pill"></span>
+                    <span id="respTime" class="resp-time"></span>
+                </div>
+                <button class="copy-btn" onclick="copyResponse()">Copy</button>
+            </div>
+            <div id="responseBody" class="response-body">
+                <div class="empty-state">
+                    <span class="em-icon">📡</span>
+                    <p>เลือก Endpoint หรือพิมพ์ URL แล้วกด Shoot!<br>Response จะแสดงที่นี่</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Station Cards -->
+        <div id="stationSection" style="display:none">
+            <div class="section-title mb-8" id="stationSectionTitle">Stations</div>
+            <div class="station-grid" id="stationGrid"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div>Developed by <strong>Internet of Things and Embedded System Research Unit (IoTES)</strong> <span class="footer-dot">•</span> <strong>Nakhon Phanom University</strong></div>
+            <div style="margin-top:4px;">NAKA Client Extension for <a href="https://naka-env.org" target="_blank">naka-env.org</a> API.</div>
+        </footer>
+
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Configuration Injection -->
+    <script nonce="${nonce}">
+        const BASE = '${base}';
+        const QUICK_ENDPOINTS = ${quickEndpointsJson};
+    </script>
+    <script src="${scriptUri}"></script>
+</body>
+</html>
